@@ -101,10 +101,10 @@ export async function GET(req: NextRequest) {
         .where(whereClause)
         .orderBy(orderBy)
         .limit(MAIN_PAGE_POSTS_LIMIT);
-      const withCategoryName = rows.map((r) => ({
+      const withCategoryName: (typeof posts.$inferSelect & { categoryName: string })[] = rows.map((r) => ({
         ...r,
         categoryName: catNameById.get(r.categoryId) ?? "—",
-      })) as (typeof posts.$inferSelect & { categoryName: string }[];
+      }));
       const byCategory = new Map<string, (typeof withCategoryName)[number][]>();
       for (const p of withCategoryName) {
         const list = byCategory.get(p.categoryId) ?? [];
