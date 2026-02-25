@@ -1,0 +1,27 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build / Next
+.next
+out
+build
+dist
+
+# Env and secrets
+.env
+.env.local
+.env*.local
+.vercel
+
+# DB
+drizzle/*.sql
+
+# Uploads (optional: ignore so repo stays small)
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Debug / IDE
+*.log
+.DS_Store
