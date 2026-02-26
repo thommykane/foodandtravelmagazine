@@ -71,7 +71,8 @@ export default function AdminCategories() {
           prev.map((c) => {
             if (c.id !== parentId || !c.children) return c;
             const byId = new Map(c.children.map((ch) => [ch.id, ch]));
-            return { ...c, children: orderedIds.map((id) => byId.get(id)).filter(Boolean) };
+            const reordered = orderedIds.map((id) => byId.get(id)).filter((ch): ch is NonNullable<typeof ch> => ch != null);
+            return { ...c, children: reordered };
           })
         );
         window.dispatchEvent(new Event("categories-updated"));
