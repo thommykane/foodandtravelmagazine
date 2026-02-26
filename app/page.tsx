@@ -1,6 +1,26 @@
 import Link from "next/link";
+import { getAdminSession } from "@/lib/admin";
+import AdminPanel from "@/components/AdminPanel";
 
-export default function HomePage() {
+type Props = { searchParams: Promise<{ admin?: string }> };
+
+export default async function HomePage({ searchParams }: Props) {
+  const params = await searchParams;
+  if (params.admin === "1") {
+    const admin = await getAdminSession();
+    if (admin) {
+      return (
+        <main style={{ padding: "1.5rem" }}>
+          <h1 style={{ marginBottom: "0.5rem", color: "var(--gold)" }}>Admin Panel</h1>
+          <p style={{ color: "var(--gold-dim)", marginBottom: "1.5rem", fontSize: "0.9rem" }}>
+            Logged in as {admin.user.email}
+          </p>
+          <AdminPanel />
+        </main>
+      );
+    }
+  }
+
   return (
     <main
       style={{

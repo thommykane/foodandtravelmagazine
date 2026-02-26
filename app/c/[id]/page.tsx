@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { categories } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import CategoryContent from "@/components/CategoryContent";
+import RecentIssuesPage from "@/components/RecentIssuesPage";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -11,6 +12,11 @@ export const dynamic = "force-dynamic";
 
 export default async function CategoryPage({ params }: Props) {
   const { id } = await params;
+
+  if (id === "recent-issues") {
+    return <RecentIssuesPage categoryName="Recent Issues" />;
+  }
+
   if (id === "all-main-page") {
     return (
       <CategoryContent

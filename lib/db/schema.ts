@@ -115,6 +115,18 @@ export const categoryFollows = pgTable(
   (t) => ({ pk: primaryKey({ columns: [t.userId, t.categoryId] }) })
 );
 
+export const magazineIssues = pgTable("magazine_issues", {
+  id: text("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  releaseDate: timestamp("release_date").notNull(),
+  blurb: text("blurb"),
+  thumbnailUrl: text("thumbnail_url"),
+  pdfUrl: text("pdf_url").notNull(),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const appSettings = pgTable("app_settings", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
