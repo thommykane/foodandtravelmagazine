@@ -3,6 +3,11 @@ import postgres from "postgres";
 import * as schema from "./schema";
 
 const connectionString = process.env.DATABASE_URL || "postgresql://localhost:5432/mag";
-const client = postgres(connectionString, { max: 10, connect_timeout: 5 });
+const isLocal = /localhost|127\.0\.0\.1/.test(connectionString);
+const client = postgres(connectionString, {
+  max: 10,
+  connect_timeout: 5,
+  ...(isLocal ? {} : { ssl: "require" }),
+});
 
 export const db = drizzle(client, { schema });
