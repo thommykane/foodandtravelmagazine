@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const PDF_JS_VERSION = "5.4.624";
+// Load from CDN so pdfjs-dist is never bundled into serverless functions (was exceeding 300MB limit)
+const PDF_JS_CDN = "https://unpkg.com/pdfjs-dist@4.0.379/build/pdf.min.mjs";
+const PDF_JS_WORKER_CDN = "https://unpkg.com/pdfjs-dist@4.0.379/build/pdf.worker.min.mjs";
 const SOUND_URL = "/page-turn.mp3";
 
 type Props = {
@@ -11,7 +13,15 @@ type Props = {
   limitPages: number;
 };
 
-type PDFDoc = import("pdfjs-dist").PDFDocumentProxy;
+// Minimal types for PDF.js from CDN (no pdfjs-dist package dependency)
+interface PDFDoc {
+  numPages: number;
+  getPage(n: number): Promise<PDFPage>;
+}
+interface PDFPage {
+  getViewport(opts: { scale: number }): { width: number; height: number };
+  render(opts: { canvasContext: CanvasRenderingContext2D; viewport: unknown; canvas?: HTMLCanvasElement }): { promise: Promise<void> };
+}
 
 export default function MagazineFlipbook({ pdfUrl, title, limitPages }: Props) {
   const leftCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -44,8 +54,8 @@ export default function MagazineFlipbook({ pdfUrl, title, limitPages }: Props) {
     if (!leftCanvas || !rightCanvas || !pdfUrl) return;
 
     async function init() {
-      const pdfjsLib = await import("pdfjs-dist");
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${PDF_JS_VERSION}/build/pdf.worker.min.mjs`;
+      const pdfjsLib = await import(/* webpackIgnore: true */ PDF_JS_CDN);
+      pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_JS_WORKER_CDN;
 
       try {
         const loadingTask = pdfjsLib.getDocument({ url: pdfUrl });
@@ -150,7 +160,7 @@ export default function MagazineFlipbook({ pdfUrl, title, limitPages }: Props) {
           if (!pdfDoc) return;
           const promiseLeft = leftPageNum <= maxP ? pdfDoc.getPage(leftPageNum) : null;
           const promiseRight = rightPageNum <= maxP ? pdfDoc.getPage(rightPageNum) : null;
-          const renderOne = (canvas: HTMLCanvasElement, page: import("pdfjs-dist").PDFPageProxy) => {
+          const renderOne = (canvas: HTMLCanvasElement, page: PDFPage) => {
             const vp = page.getViewport({ scale });
             const ctx = canvas.getContext("2d")!;
             canvas.width = vp.width;
