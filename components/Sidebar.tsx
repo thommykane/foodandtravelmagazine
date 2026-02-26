@@ -114,7 +114,7 @@ export default function Sidebar() {
 
       {user && (
         <Link
-          href={user.isAdmin ? "/admin" : `/u/${user.username}`}
+          href={user.isAdmin ? "/dashboard" : `/u/${user.username}`}
           style={{
             display: "block",
             padding: "0.5rem 1rem",

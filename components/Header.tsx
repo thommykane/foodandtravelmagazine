@@ -50,7 +50,7 @@ export default function Header() {
         }}
       >
         <Link
-          href={user.isAdmin ? "/admin" : `/u/${user.username}`}
+          href={user.isAdmin ? "/dashboard" : `/u/${user.username}`}
           style={{
             display: "flex",
             alignItems: "center",
