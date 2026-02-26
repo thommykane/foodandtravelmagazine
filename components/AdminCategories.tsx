@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
+type CategoryItem = { id: string; name: string; menuSection?: string; defaultTab?: string; children?: { id: string; name: string; defaultTab?: string }[] };
+
 export default function AdminCategories() {
-  const [categories, setCategories] = useState<{ id: string; name: string; menuSection?: string; defaultTab?: string; children?: { id: string; name: string; defaultTab?: string }[] }[]>([]);
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [newName, setNewName] = useState("");
   const [newParentId, setNewParentId] = useState("");
@@ -42,7 +44,7 @@ export default function AdminCategories() {
     try {
       const res = await fetch("/api/admin/categories", { credentials: "include" });
       const text = await res.text();
-      let data: { categories?: unknown[]; error?: string } = {};
+      let data: { categories?: CategoryItem[]; error?: string } = {};
       try {
         data = text ? JSON.parse(text) : {};
       } catch {
